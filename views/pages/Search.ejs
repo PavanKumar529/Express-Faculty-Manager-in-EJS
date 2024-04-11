@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        color: white !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <%- include('../partials/nav') %>
+      <div class="row">
+        <div class="col">
+          <main style="height: 100vh; background-color: #201658">
+            <p class="m-2 text-end">Found Result:<span id="total"></span></p>
+            <br />
+            <div class="row d-flex justify-content-evenly" id="body"></div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <%- include('../partials/footer') %>
+    <script>
+      let body = document.getElementById("body");
+      let totaltemp = document.getElementById("total");
+      //this is for card printing
+      function print({ total, result }) {
+        totaltemp.innerHTML=`<span>${total}</span>`
+        let str = "";
+        if (result.length > 0) {
+          result.map((item) => {
+            str += `   <div class="col-md-5">
+                        <div class="card">
+                            <div class="card body">
+                                <p class="text-danger">${item.name}</p>
+                                <p class="text-danger">${item.course}</p>
+                                <p class="text-danger">${item.phone}</p>
+
+
+                                
+                            </div>
+                        </div>
+                    </div>`;
+          });
+        } else {
+          str = `<h1 class="text-center ">no result Found</h1>`;
+        }
+        body.innerHTML=str
+      }
+      var queryString = window.location.search.substring(1);
+      if (queryString) {
+        fetch("/search", {
+          method: "POST",
+          body: JSON.stringify({ search: queryString }),
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((item) => {
+            return item.json();
+          })
+          .then((data) => {
+            print(data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        //data
+        //printing card
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        body{
+            color: white !important;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+<body>
+
+        <div class="container-fluid">
+             <%- include('../partials/nav') %>
+              <div class="row">
+                 <div class="col">
+                     <main style="min-height: 100vh; background-color: #201658">
+                         <h1 class="text-center m-3"><%= title %></h1>
+                         <hr/>
+                         <div class="row d-flex justify-content-evenly">
+                            <div>
+                                <input type="search"  class="p-2" placeholder="Searching..." id="search"/> 
+                               <button class="btn btn-light p-2" onclick="serchHandler()">search</button>
+                            </div>
+                            
+                              <p class="m-3 text-end">Total faculty : <%= total %></p>
+                           <% data.map((item)=>{  %>
+                                 <div class="col-md-5 m-2">
+                                      <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="text-danger"><%= item.name %></h4>
+                                            <p class="text-danger"><%= item.qul %></p>
+                                            <p class="text-danger"><%= item.course %></p>
+                                            <p class="text-danger"><%= item.phone %></p>
+                                            <div>
+                                                <button class="btn btn-info"onclick="editHandler(<%= item.id%>)">edit</button>
+                                                <button class="btn btn-danger"onclick="deleteHandler(<%= item.id%>)">del</button>
+                                               
+                                                
+                                            </div>
+                                        </div>
+                                      </div>
+                                 </div>
+                          <% }) %>
+
+                         </div>
+                    </main>
+                 </div>
+            </div>
+           
+            <%- include('../partials/footer') %>
+        </div>
+        <script>
+            //this is for searching
+            function serchHandler()
+            {
+                
+                let search=document.getElementById('search')
+                if(!search.value)
+                {
+                    alert('search field must have a value')
+                }
+                else{
+                    //your logic
+                    window.location.href=`/search?${search.value}`
+                }
+            }
+            function editHandler(id)
+            {
+                 location.href=`/admin?${id}`
+            }
+            async function deleteHandler(id)
+            {
+                 try{
+                     let data=await  fetch(`/faculty/${id}`,{method:"DELETE"})
+                      let res= await data.json()
+                      if(res.ok)
+                      {
+                        alert('successful delete')
+                        window.location.reload()
+
+                      }
+                 }
+                 catch(err)
+                 {
+                    console.log(err)
+                    alert(err.message)
+                 }
+            }
+        </script>
+</body>
+</html>

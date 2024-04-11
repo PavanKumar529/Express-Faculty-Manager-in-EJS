@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        color: white !important;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <%- include('../partials/nav') %>
+      <div class="row">
+        <div class="col">
+          <main style="height: 100vh; background-color: #201658">
+            <h1 class="text-center m-3">Admin Page</h1>
+            <div class="row d-flex justify-content-center align-items-center">
+              <div class="col-md-6">
+                <form>
+                  <input
+                    type="text"
+                    name="uname"
+                    id="uname"
+                    placeholder="Enter name"
+                    class="form-control"
+                  />
+                  <br />
+                  <input
+                    type="text"
+                    name="qul"
+                    id="qul"
+                    placeholder="Enter qualfication"
+                    class="form-control"
+                  />
+                  <br />
+                  <input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    placeholder="Enter your phone no"
+                    class="form-control"
+                  />
+                  <br />
+                  <div>
+                    <select id="dep" name="dep">
+                      <option value="mern">Mern</option>
+                      <option value="aws">aws</option>
+                      <option value="testing">testing</option>
+                    </select>
+                  </div>
+
+                  <br />
+                  <button class="btn btn-light" id="regi">Register</button>
+                </form>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      <%- include('../partials/footer') %>
+    </div>
+    <script>
+          let uname = document.getElementById("uname");
+        let phone = document.getElementById("phone");
+        let dep = document.getElementById("dep");
+        let qul = document.getElementById("qul");
+        let singleData={}
+        let flag=false
+      var queryString = window.location.search.substring(1);
+      var params = queryString.split('&')
+       let parmsData=params[0]
+       if(parmsData)
+       {
+           fetch(`/edit/${parmsData}`).then((res)=>{
+            return res.json()
+           }).then((data)=>{
+             singleData=data
+             flag=true
+             uname.value=data.name,
+             phone.value=data.phone,
+             qul.value=data.qul,
+             dep.value=data.course
+           })
+       }
+
+
+      let btn = document.getElementById("regi");
+      async function registerHandler(arg) {
+        try {
+          let res = await fetch("/admin", {
+            method: "POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify(arg),
+          });
+          let data = await res.json();
+           if(data)
+           {
+            alert("Created successful")
+            window.location.href='/faculty'
+           }
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+
+      async function editDataHandler(arg)
+      {
+        try {
+          let res = await fetch(`/admin/${singleData.id}`, {
+            method: "PUT",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify(arg),
+          });
+          let data = await res.json();
+           if(data)
+           {
+            alert("edit successful")
+            window.location.href='/faculty'
+           }
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if(flag)
+        {
+          let obj = {
+          id:singleData.id,
+          name: uname.value,
+          qul: qul.value,
+          phone: phone.value,
+          course: dep.value,
+        };
+        editDataHandler(obj)
+        singleData={}
+        flag=false
+        }
+        else{
+          let obj = {
+          id: Math.trunc(Math.random() * 1000),
+          name: uname.value,
+          qul: qul.value,
+          phone: phone.value,
+          course: dep.value,
+        };
+          
+        registerHandler(obj);
+        }
+     
+      });
+    </script>
+  </body>
+</html>
